@@ -11,12 +11,15 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField]
-    private Transform cameraTarget;
+    private Camera cam;
 
     #endregion
 
     #region Serializeble Variables
     [Header("Serializeble Variables")]
+
+    [SerializeField, Range(100, 800)]
+    private float mouseSensX;
 
     [SerializeField, Range(1, 8)]
     private float moveSpeed;
@@ -27,6 +30,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0.01f, 1)]
     private float isGroundedLenght;
 
+    [SerializeField, Range(0.01f, 5)]
+    private float pickUpDistance;
+
+   
+    LayerMask canPickUp;
+
     #endregion
 
     #region Private Variables
@@ -36,7 +45,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 inputDir;
     private Vector3 moveDir;
 
+    private float yRotation;
+
     private float jumpElapsedTime;
+
+    private Collider[] pickUpHit;
 
     #endregion
 
@@ -46,23 +59,43 @@ public class PlayerController : MonoBehaviour
         moveDir = Vector3.zero;
 
         jumpElapsedTime = 0;   
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+
+        canPickUp = LayerMask.NameToLayer("PickUpObjects");
     }
 
     void Update()
     {
         inputDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             jumpElapsedTime = BUTTON_PRESS_TIME;
         }
 
         moveDir = transform.forward * inputDir.z + transform.right * inputDir.x;
         moveDir.Normalize();
+
+        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * mouseSensX;
+
+        yRotation += mouseX;
+
+        if(Input.GetMouseButtonDown(0)) 
+        {
+            if(CanPickUp()) 
+            {
+                Debug.Log(pickUpHit[0].name);
+            }
+        }
     }
 
     private void FixedUpdate()
     {
+        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
+
         rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
 
         if (CanJump())
@@ -94,9 +127,21 @@ public class PlayerController : MonoBehaviour
         return hitGround;
     }
 
+    bool CanPickUp()
+    {
+        return InPickUpDist();
+    }
+
+    bool InPickUpDist()
+    {
+        pickUpHit = Physics.OverlapSphere(transform.position + transform.forward * pickUpDistance, pickUpDistance, canPickUp);
+
+        return pickUpHit.Length > 0;
+    }
+
     #endregion
 
-    #region Voids For Clean Code
+    #region For Clean Code
 
     void ManageElapsedTime(ref float _timeToManager)
     {
@@ -116,12 +161,15 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
 
-        Ray ray = new Ray();
+        Ray groundCheckRay = new Ray();
+        groundCheckRay.origin = transform.position;
+        groundCheckRay.direction = Vector3.down;
 
-        ray.origin = transform.position;
-        ray.direction = Vector3.down;
+        Gizmos.DrawLine(groundCheckRay.origin, (groundCheckRay.direction * isGroundedLenght) + transform.position);
 
-        Gizmos.DrawLine(ray.origin, (ray.direction * isGroundedLenght) + transform.position);
+        Gizmos.color = Color.green;
+  
+        Gizmos.DrawWireSphere(transform.position + transform.forward * pickUpDistance, pickUpDistance);
 
     }
 
