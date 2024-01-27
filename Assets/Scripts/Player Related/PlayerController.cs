@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Camera cam;
 
+
+    [SerializeField]
+    LayerMask canPickUp;
+
     #endregion
 
     #region Serializeble Variables
@@ -32,9 +36,6 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField, Range(0.01f, 5)]
     private float pickUpDistance;
-
-   
-    LayerMask canPickUp;
 
     #endregion
 
@@ -62,9 +63,6 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-
-        canPickUp = LayerMask.NameToLayer("PickUpObjects");
     }
 
     void Update()
@@ -87,7 +85,7 @@ public class PlayerController : MonoBehaviour
         {
             if(CanPickUp()) 
             {
-                Debug.Log(pickUpHit[0].name);
+                Debug.Log(GetClosestPickUp(pickUpHit).name);
             }
         }
     }
@@ -153,6 +151,25 @@ public class PlayerController : MonoBehaviour
         {
             _timeToManager = 0;
         }
+    }
+
+    Transform GetClosestPickUp(Collider[] _collArray)
+    {
+        Transform pickUp = null;
+
+        float lowestDIst = pickUpDistance * 2;
+
+        foreach (Collider coll in _collArray) 
+        {
+            float dist = Vector3.Distance(transform.position, coll.transform.position);
+            if (dist < lowestDIst)
+            {
+                lowestDIst = dist;
+                pickUp = coll.transform;
+            }
+        }
+
+        return pickUp;
     }
 
     #endregion 
