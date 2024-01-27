@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Rigidbody rb;
 
+    [SerializeField]
+    private Transform cameraTarget;
+
     #endregion
 
     #region Serializeble Variables
@@ -33,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 inputDir;
     private Vector3 moveDir;
 
-    private float jumpPressElapsedTime;
+    private float jumpElapsedTime;
 
     #endregion
 
@@ -42,7 +45,7 @@ public class PlayerController : MonoBehaviour
         inputDir = Vector3.zero;
         moveDir = Vector3.zero;
 
-        jumpPressElapsedTime = 0;   
+        jumpElapsedTime = 0;   
     }
 
     void Update()
@@ -51,10 +54,10 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            jumpPressElapsedTime = BUTTON_PRESS_TIME;
+            jumpElapsedTime = BUTTON_PRESS_TIME;
         }
 
-        moveDir = new Vector3(inputDir.x, 0, inputDir.z);
+        moveDir = transform.forward * inputDir.z + transform.right * inputDir.x;
         moveDir.Normalize();
     }
 
@@ -68,7 +71,7 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         }
 
-        ManageElapsedTime(ref jumpPressElapsedTime);
+        ManageElapsedTime(ref jumpElapsedTime);
 
     }
 
@@ -76,7 +79,7 @@ public class PlayerController : MonoBehaviour
 
     bool CanJump()
     {
-        return IsGrounded() && jumpPressElapsedTime > 0;
+        return IsGrounded() && jumpElapsedTime > 0;
     }
 
     bool IsGrounded()
