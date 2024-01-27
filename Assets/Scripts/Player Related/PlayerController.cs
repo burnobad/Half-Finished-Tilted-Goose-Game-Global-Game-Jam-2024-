@@ -18,19 +18,32 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(1, 8)]
     private float moveSpeed;
 
-    [SerializeField, Range(1, 8)]
+    [SerializeField, Range(1, 6)]
     private float jumpForce;
 
-    [SerializeField, Range(0.01f, 5)]
+    [SerializeField, Range(0.01f, 1)]
     private float isGroundedLenght;
 
     #endregion
 
     #region Private Variables
 
+    private const float BUTTON_PRESS_TIME = 0.23f;
+
     private Vector3 inputDir;
     private Vector3 moveDir;
+
+    private float jumpPressElapsedTime;
+
     #endregion
+
+    private void Awake()
+    {
+        inputDir = Vector3.zero;
+        moveDir = Vector3.zero;
+
+        jumpPressElapsedTime = 0;   
+    }
 
     void Update()
     {
@@ -38,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            inputDir.y = 1;
+            jumpPressElapsedTime = BUTTON_PRESS_TIME;
         }
 
         moveDir = new Vector3(inputDir.x, 0, inputDir.z);
@@ -55,13 +68,15 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         }
 
+        ManageElapsedTime(ref jumpPressElapsedTime);
+
     }
 
     #region Calculated Variable and Checks
 
     bool CanJump()
     {
-        return IsGrounded() && inputDir.y != 0;
+        return IsGrounded() && jumpPressElapsedTime > 0;
     }
 
     bool IsGrounded()
@@ -77,6 +92,22 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
+    #region Voids For Clean Code
+
+    void ManageElapsedTime(ref float _timeToManager)
+    {
+        if (_timeToManager > 0)
+        {
+            _timeToManager -= Time.deltaTime;
+        }
+        else
+        {
+            _timeToManager = 0;
+        }
+    }
+
+    #endregion 
 
     void OnDrawGizmos()
     {
