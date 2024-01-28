@@ -24,7 +24,7 @@ public class PickUpObjectComponent : MonoBehaviour
 
         this.transform.parent = _parent;
 
-         rb.velocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
         this.transform.localPosition = Vector3.zero + Vector3.up * transform.localScale.y / 2;

@@ -19,6 +19,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private LayerMask canPickUp;
 
+    private static PlayerController instance;
+    public static PlayerController Instance
+    { get { return instance; } }    
+
     #endregion
 
     #region Serializeble Variables
@@ -39,11 +43,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0.01f, 5)]
     private float pickUpDistance;
 
+    [SerializeField, Range(1, 3)]
+    private int maxHealth;
+
     #endregion
 
     #region Private Variables
 
     private const float BUTTON_PRESS_TIME = 0.23f;
+
+    private float currentHealth;
 
     private Vector3 inputDir;
     private Vector3 moveDir;
@@ -55,10 +64,13 @@ public class PlayerController : MonoBehaviour
     private PickUpObjectComponent currentPickUp;
     private Collider[] pickUpHit;
 
+    bool isDead;
     #endregion
 
     private void Awake()
     {
+        instance = this;
+
         inputDir = Vector3.zero;
         moveDir = Vector3.zero;
 
@@ -68,6 +80,9 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
+
+        currentHealth = maxHealth;
+        isDead = false;
     }
 
     void Update()
@@ -86,7 +101,7 @@ public class PlayerController : MonoBehaviour
 
         yRotation += mouseX;
 
-        if(Input.GetMouseButtonDown(0)) 
+        if(Input.GetMouseButtonDown(0) && !isDead) 
         {
             if(CanPickUp()) 
             {
@@ -104,23 +119,37 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
-
-        rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
-
-        if (CanJump())
+        if(!isDead)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); 
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
+
+            rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
+
+            if (CanJump())
+            {
+                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+                rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            }
+
+            ManageElapsedTime(ref jumpElapsedTime);
         }
-
-        ManageElapsedTime(ref jumpElapsedTime);
-
     }
+
+    
 
     public void GetDamaged()
     {
-        Debug.Log(name + " is damaged");
+        currentHealth--;
+
+        if (currentHealth <= 0)
+        {
+            Death();
+        }
+
+    }
+    void Death()
+    {
+        isDead = true;
     }
 
     #region Calculated Variable and Checks
@@ -132,7 +161,7 @@ public class PlayerController : MonoBehaviour
 
     bool CanPickUp()
     {
-        return InPickUpDist() && currentPickUp == null;
+        return FoundPickUp() && currentPickUp == null;
     }
 
     bool CanThrow()
@@ -152,7 +181,7 @@ public class PlayerController : MonoBehaviour
         return hitGround;
     }
 
-    bool InPickUpDist()
+    bool FoundPickUp()
     {
         pickUpHit = Physics.OverlapSphere(transform.position + transform.forward * pickUpDistance, pickUpDistance, canPickUp);
 

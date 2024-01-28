@@ -13,6 +13,9 @@ public class EnemyController : MonoBehaviour
     private NavMeshAgent agent;
 
     [SerializeField]
+    private Collider coll;
+
+    [SerializeField]
     private LayerMask playerLayer;
 
     #endregion
@@ -68,7 +71,15 @@ public class EnemyController : MonoBehaviour
 
     public void GetDamaged()
     {
-        Debug.Log(name + " is damaged");
+        currentHP--;
+
+        if(currentHP <= 0)
+        {
+            state = State.Dead;
+            Debug.Log(state);
+        }
+
+        target = PlayerController.Instance.transform;
     }
 
     #region State Behavioue
@@ -98,7 +109,7 @@ public class EnemyController : MonoBehaviour
 
     void DeadState()
     {
-
+        coll.enabled = false;
     }
 
     #endregion

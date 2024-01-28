@@ -16,17 +16,6 @@ public class DamageDetectionComponent : MonoBehaviour
     [SerializeField]
     private List<CollTypes> canBeDamaged;
 
-    private List<DamageDetectionComponent> collDamaged = new List<DamageDetectionComponent>();
-
-    private void Awake()
-    {
-        collDamaged.Clear();
-    }
-    private void OnEnable()
-    {
-        collDamaged.Clear();
-    }
-
     void OnTriggerEnter(Collider _coll)
     {
         DamageDetectionComponent collDamage = _coll.GetComponent<DamageDetectionComponent>();
@@ -52,12 +41,9 @@ public class DamageDetectionComponent : MonoBehaviour
 
         foreach (CollTypes myDamageType in canBeDamaged)
         {
-            if (myDamageType == _collDamage.myCollType && !collDamaged.Contains(_collDamage))
+            if (myDamageType == _collDamage.myCollType )
             {
-                if (!collDamaged.Contains(_collDamage))
-                {
-                    collDamaged.Add(_collDamage);
-                }
+
 
                 if(playerController != null)
                 {
