@@ -9,6 +9,8 @@ public class CameraController : MonoBehaviour
     
     [SerializeField]
     private Transform player;
+    [SerializeField]
+    private Transform parent;
 
     [SerializeField, Range(100, 800)]
     private float mouseSensY = 400;
@@ -22,8 +24,10 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
+        transform.parent = parent;
+
         startPos = transform.position - player.position;
-        startRot = transform.localRotation;
+        startRot = transform.rotation;
 
         float zSquare = Mathf.Pow(startPos.z, 2);
         float ySquare = Mathf.Pow(startPos.y, 2);

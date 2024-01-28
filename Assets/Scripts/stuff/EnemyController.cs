@@ -110,6 +110,7 @@ public class EnemyController : MonoBehaviour
     void DeadState()
     {
         coll.enabled = false;
+        coll.gameObject.transform.rotation = Quaternion.Euler(0f, 0f, 90f);  
     }
 
     #endregion

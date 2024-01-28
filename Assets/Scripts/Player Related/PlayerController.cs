@@ -87,6 +87,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if(isDead)
+        {
+
+            if(Input.GetMouseButtonDown(0)) 
+            {
+                EventsManager_PersistenceScene.ReloadSceneEvent();
+            }
+        }
+
         inputDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -150,6 +159,7 @@ public class PlayerController : MonoBehaviour
     void Death()
     {
         isDead = true;
+        transform.rotation = Quaternion.Euler(0f, 0f, 90f);
     }
 
     #region Calculated Variable and Checks

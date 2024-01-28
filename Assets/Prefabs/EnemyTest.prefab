@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 7bad35eeadcc3b74eacc42ad5f06fdc0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,7 +156,7 @@ Transform:
   m_Children:
   - {fileID: 620083674681655175}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &3899930453929358331
 NavMeshAgent:
@@ -193,9 +193,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 3899930453929358331}
+  coll: {fileID: 712565546133500365}
   playerLayer:
     serializedVersion: 2
     m_Bits: 1024
   moveSpeed: 2
-  detectionRadius: 3
-  maxHealth: 0
+  detectionRadius: 8
+  maxHealth: 2
