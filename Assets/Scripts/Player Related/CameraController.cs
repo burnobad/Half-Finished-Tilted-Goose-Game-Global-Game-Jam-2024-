@@ -41,10 +41,6 @@ public class CameraController : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(0, player.localEulerAngles.y, 0f) * startRot;
 
-        //Vector3 camAfterXRotation = new Vector3(0f, Mathf.Cos(transform.localEulerAngles.x), 0f);
-
-        //Debug.Log(camAfterXRotation);
-
         transform.position = player.position + cameraStartPos;
     }
 }

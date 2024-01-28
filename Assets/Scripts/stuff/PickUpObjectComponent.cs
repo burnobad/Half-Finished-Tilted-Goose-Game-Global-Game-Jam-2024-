@@ -20,18 +20,19 @@ public class PickUpObjectComponent : MonoBehaviour
     public void SetParent(Transform _parent)
     {
         modelColl.enabled = false;
-
         rb.useGravity = false;
-        rb.velocity = Vector3.zero;
+
+        this.transform.parent = _parent;
+
+         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        transform.parent = _parent;
-        transform.localPosition = Vector3.zero + Vector3.up * transform.localScale.y/ 2;
+        this.transform.localPosition = Vector3.zero + Vector3.up * transform.localScale.y / 2;
     }
 
     public void Throw(Vector3 _playerForward)
     {
-        transform.parent = null;
+        this.transform.parent = null;
         rb.useGravity = true;
 
         Vector3 throwDir = _playerForward;

@@ -10,10 +10,10 @@ public class EnemyController : MonoBehaviour
     [Header("Components")]
 
     [SerializeField]
-    private Rigidbody rb;
+    private NavMeshAgent agent;
 
     [SerializeField]
-    private NavMeshAgent agent;
+    private LayerMask playerLayer;
 
     #endregion
 
@@ -23,15 +23,49 @@ public class EnemyController : MonoBehaviour
     [SerializeField, Range(1, 8)]
     private float moveSpeed;
 
+    [SerializeField, Range(1, 8)]
+    private float detectionRadius;
+
     #endregion
 
-    void Start()
+    #region Private Variables
+
+    private Transform target;
+
+    #endregion
+
+    void Awake()
     {
-        
+        target = null;
+        agent.speed = moveSpeed;
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        if(target != null)
+        {
+            agent.destination = target.position;
+        }
+        else 
+        {
+            Collider[] playerDetection = 
+                Physics.OverlapSphere(transform.position + transform.forward * detectionRadius / 2, detectionRadius, playerLayer);
+
+            if(playerDetection.Length > 0 ) 
+            {
+                target = playerDetection[0].transform;
+            }
+
+        }
         
+
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(transform.position + transform.forward * detectionRadius / 2, detectionRadius);
+
     }
 }

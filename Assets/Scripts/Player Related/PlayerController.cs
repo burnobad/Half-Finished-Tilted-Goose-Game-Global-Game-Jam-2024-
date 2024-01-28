@@ -67,7 +67,7 @@ public class PlayerController : MonoBehaviour
         currentPickUp = null;
 
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.visible = false;
     }
 
     void Update()
