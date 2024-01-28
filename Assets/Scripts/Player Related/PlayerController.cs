@@ -13,9 +13,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Camera cam;
 
+    [SerializeField]
+    private Transform pickUpParent;
 
     [SerializeField]
-    LayerMask canPickUp;
+    private LayerMask canPickUp;
 
     #endregion
 
@@ -50,6 +52,7 @@ public class PlayerController : MonoBehaviour
 
     private float jumpElapsedTime;
 
+    private PickUpObjectComponent currentPickUp;
     private Collider[] pickUpHit;
 
     #endregion
@@ -59,7 +62,9 @@ public class PlayerController : MonoBehaviour
         inputDir = Vector3.zero;
         moveDir = Vector3.zero;
 
-        jumpElapsedTime = 0;   
+        jumpElapsedTime = 0;
+
+        currentPickUp = null;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -85,7 +90,14 @@ public class PlayerController : MonoBehaviour
         {
             if(CanPickUp()) 
             {
-                Debug.Log(GetClosestPickUp(pickUpHit).name);
+                currentPickUp = GetClosestPickUp(pickUpHit).GetComponentInParent<PickUpObjectComponent>();
+
+                currentPickUp.SetParent(pickUpParent);
+            }
+            else if(CanThrow())
+            {
+                currentPickUp.Throw(transform.forward);
+                currentPickUp = null;
             }
         }
     }
@@ -113,6 +125,16 @@ public class PlayerController : MonoBehaviour
         return IsGrounded() && jumpElapsedTime > 0;
     }
 
+    bool CanPickUp()
+    {
+        return InPickUpDist() && currentPickUp == null;
+    }
+
+    bool CanThrow()
+    {
+        return currentPickUp != null;
+    }
+
     bool IsGrounded()
     {
         Ray ray = new Ray();
@@ -123,11 +145,6 @@ public class PlayerController : MonoBehaviour
         bool hitGround = Physics.Raycast(ray.origin, ray.direction, isGroundedLenght);
 
         return hitGround;
-    }
-
-    bool CanPickUp()
-    {
-        return InPickUpDist();
     }
 
     bool InPickUpDist()
