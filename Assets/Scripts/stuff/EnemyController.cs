@@ -26,11 +26,18 @@ public class EnemyController : MonoBehaviour
     [SerializeField, Range(1, 8)]
     private float detectionRadius;
 
+    [SerializeField, Range(1, 3)]
+    private int maxHealth;
+
     #endregion
 
     #region Private Variables
 
+    private float currentHP;
     private Transform target;
+    
+    private enum State { Move, Damaged, Dead}
+    private State state;
 
     #endregion
 
@@ -38,29 +45,63 @@ public class EnemyController : MonoBehaviour
     {
         target = null;
         agent.speed = moveSpeed;
+        state = State.Move;
+        currentHP = maxHealth;
     }
 
     void FixedUpdate()
     {
-        if(target != null)
+        switch (state)
+        {
+            case State.Move:
+                MoveState();
+                break;
+            case State.Damaged:
+                DamagedState();
+                break;
+            case State.Dead:
+                DeadState();
+                break;
+        }    
+
+    }
+
+    public void GetDamaged()
+    {
+        Debug.Log(name + " is damaged");
+    }
+
+    #region State Behavioue
+    void MoveState()
+    {
+        if (target != null)
         {
             agent.destination = target.position;
         }
-        else 
+        else
         {
-            Collider[] playerDetection = 
+            Collider[] playerDetection =
                 Physics.OverlapSphere(transform.position + transform.forward * detectionRadius / 2, detectionRadius, playerLayer);
 
-            if(playerDetection.Length > 0 ) 
+            if (playerDetection.Length > 0)
             {
                 target = playerDetection[0].transform;
             }
 
         }
-        
+    }
+
+    void DamagedState()
+    {
 
     }
 
+    void DeadState()
+    {
+
+    }
+
+    #endregion
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

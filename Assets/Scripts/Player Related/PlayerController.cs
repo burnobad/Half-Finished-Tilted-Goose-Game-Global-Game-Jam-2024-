@@ -118,6 +118,11 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public void GetDamaged()
+    {
+        Debug.Log(name + " is damaged");
+    }
+
     #region Calculated Variable and Checks
 
     bool CanJump()
